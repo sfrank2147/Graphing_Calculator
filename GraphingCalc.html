@@ -1,0 +1,70 @@
+<!-- This web page will draw a line with a slope of 2 -->
+
+<!DOCTYPE html>
+
+<head>
+  <title>Graphing Calculator</title>
+
+  <script>
+
+var WIDTH = "400";
+var HEIGHT = "400";
+
+    function isNumber(input) {
+    return(!isNaN(input+0) && input !== null && input !== "" && input !== false);
+    }
+
+    function drawLine(slope, yint) {
+
+      var ctx = document.getElementById("graphSpace").getContext("2d");
+      ctx.clearRect(0,0,WIDTH,HEIGHT);
+
+      for(var x = 0; x < WIDTH; x++) {
+	var y = HEIGHT - slope*x - yint;
+	ctx.fillRect(x,y,1,1);
+      }
+    }
+
+function graphEntry() {
+var x = document.getElementById('slope').value;
+var y = document.getElementById('yint').value;
+
+if(isNumber(x) && isNumber(y)) {
+  drawLine(x,y);
+} else {
+      var ctx = document.getElementById("graphSpace").getContext("2d");
+      ctx.clearRect(0,0,300,300);
+}
+
+}
+			 
+
+  </script>
+
+</head>
+
+<body>
+<canvas id="graphSpace" style="border:1px solid">This should be the graphing space</canvas>
+
+<script>
+
+var canv = document.getElementById("graphSpace");
+canv.setAttribute("width",WIDTH);
+canv.setAttribute("height",HEIGHT);
+
+</script>
+
+
+<p>
+<br>
+slope: <input type="text" id="slope" value = "1" onkeydown="if(event.keyCode == 13) {graphEntry();}">
+y-intercept: <input type="text" id="yint" value = "0" onkeydown="if(event.keyCode == 13) {graphEntry();}">
+</p>
+
+<button type="button" onclick="
+graphEntry();
+">Click To Graph!</button>
+
+</body>
+
+</html>
