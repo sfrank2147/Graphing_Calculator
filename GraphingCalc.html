@@ -1,69 +1,197 @@
 <!-- This web page will draw a line with a slope of 2 -->
 
 <!DOCTYPE html>
+<html>
+
 
 <head>
   <title>Graphing Calculator</title>
 
   <script>
 
-var WIDTH = "400";
-var HEIGHT = "400";
+    var WIDTH = "450";
+    var HEIGHT = "450";
+    var MINX = -10;
+    var MAXX = 10;
+    var MINY = -10;
+    var MAXY = 10;
+    var XINTERVAL = 1;
+    var YINTERVAL = 1;
+    var xDistance = WIDTH/(MAXX - MINX);
+    var yDistance = HEIGHT/(MAXY - MINY);
+
+    function changeDimensions() {
+
+    var minx = document.getElementById("xmin").value;
+    var maxx = document.getElementById("xmax").value;
+    var miny = document.getElementById("ymin").value;
+    var maxy = document.getElementById("ymax").value;
+    var xinterval = document.getElementById("xinterval").value;
+    var yinterval = document.getElementById("yinterval").value;
+    
+
+    if(minx>=maxx || miny>= maxy ||!isNumber(minx)||!isNumber(maxx)||!isNumber(miny)||!isNumber(maxy)||!isNumber(xinterval)||xinterval<1||!isNumber(yinterval)||yinterval<1) {
+    alert("Invalid dimensions");
+    return;
+    } else {
+    MINX = minx;
+    MAXX = maxx;
+    MINY = miny;
+    MAXY = maxy;
+    xDistance = WIDTH/(MAXX - MINX);
+    yDistance = HEIGHT/(MAXY - MINY);
+    XINTERVAL = xinterval;
+    YINTERVAL = yinterval;
+																					    
+    drawAxes();
+    }
+    }
+
+    function zeroX() {
+    var ratio = (0-MINX)/(MAXX-MINX);
+    return(ratio*WIDTH);
+    }
+
+    function zeroY() {
+    var ratio = (0-MINY)/(MAXY-MINY);
+    return(HEIGHT - (ratio*HEIGHT));
+    }
 
     function isNumber(input) {
     return(!isNaN(input+0) && input !== null && input !== "" && input !== false);
     }
 
-    function drawLine(slope, yint) {
-
-      var ctx = document.getElementById("graphSpace").getContext("2d");
-      ctx.clearRect(0,0,WIDTH,HEIGHT);
-
-      for(var x = 0; x < WIDTH; x++) {
-	var y = HEIGHT - slope*x - yint;
-	ctx.fillRect(x,y,1,1);
-      }
+/*
+    function xToValue(canvasX) {
+    return ((canvasX/(MINX + MAXX))-MAXX);
     }
 
-function graphEntry() {
-var x = document.getElementById('slope').value;
-var y = document.getElementById('yint').value;
+    function yToValue(canvasY) {
+    return (MAXY-(canvasY/(MINY+MAXY)));
+    }
+*/
 
-if(isNumber(x) && isNumber(y)) {
-  drawLine(x,y);
-} else {
-      var ctx = document.getElementById("graphSpace").getContext("2d");
-      ctx.clearRect(0,0,300,300);
+    function xToCanvas(xValue) {
+    var distance = MAXX - MINX; 
+    var offSet = xValue*(WIDTH/distance);
+    return(offSet+zeroX());
+    }
+
+    function yToCanvas(yValue) {
+    var offSet = yValue*(HEIGHT/(MAXY - MINY));
+    return(zeroY()-offSet);
+    }
+
+    function drawAxes() {
+    var ctx = document.getElementById("graphSpace").getContext("2d");
+    ctx.clearRect(0,0,WIDTH,HEIGHT);
+    //var zeroX = WIDTH/2;
+    //var zeroY = HEIGHT/2;
+    ctx.lineWidth = 3;
+
+//y axis
+    ctx.beginPath();
+    ctx.moveTo(zeroX(),0);
+    ctx.lineTo(zeroX(),HEIGHT);
+    ctx.closePath();
+    ctx.stroke();
+    
+//x axis
+    ctx.beginPath();
+    ctx.moveTo(0,zeroY());
+    ctx.lineTo(WIDTH,zeroY());
+    ctx.closePath();
+    ctx.stroke();
+
+ctx.lineWidth = 1;
+//Scale x axis
+    var xScaleLocation = 0;
+    for(var scale = MINX; scale <= MAXX; scale++) {
+				   if(scale % XINTERVAL == 0) {
+				     ctx.strokeText(scale,xScaleLocation,zeroY() + 10);
+				   }
+				   xScaleLocation += xDistance;
+    }
+//Scale y axis
+var yScaleLocation = HEIGHT;
+for(var scale = MINY; scale <= MAXY; scale++) {
+			       if(scale % YINTERVAL == 0) {
+			         ctx.strokeText(scale,zeroX() + 5,yScaleLocation);
+			       }
+			       yScaleLocation -= yDistance;
+}
 }
 
-}
+    function drawLine(slope, yint) {
+    yint = eval(yint);
+    slope = eval(slope);
+
+    var ctx = document.getElementById("graphSpace").getContext("2d");
+    ctx.clearRect(0,0,WIDTH,HEIGHT);
+    drawAxes();
+
+
+    for(var x = eval(MINX); x < eval(MAXX); x += 0.01) {
+	var y = yint + slope * x;
+	ctx.fillRect(xToCanvas(x),yToCanvas(y),1,1);
+	 }
+
+	}
+
+    function graphEntry() {
+    var x = document.getElementById('slope').value;
+    var y = document.getElementById('yint').value;
+
+    if(isNumber(x) && isNumber(y)) {
+    drawLine(x,y);
+    } 
+    else {
+    drawAxes();
+    }
+
+    }
 			 
 
   </script>
 
+  <style>
+    canvas {
+    border: 1px solid;
+    margin-left: 100px;
+    }
+  </style>
 </head>
 
-<body>
-<canvas id="graphSpace" style="border:1px solid">This should be the graphing space</canvas>
+<body onLoad="drawAxes();">
+  <canvas id="graphSpace">This should be the graphing space</canvas>
 
-<script>
+  <script>
 
-var canv = document.getElementById("graphSpace");
-canv.setAttribute("width",WIDTH);
-canv.setAttribute("height",HEIGHT);
+    var canv = document.getElementById("graphSpace");
+    canv.setAttribute("width",WIDTH);
+    canv.setAttribute("height",HEIGHT);
+  </script>
 
-</script>
 
+  <p>
+    <br/>
+      slope: <input type="text" id="slope" value = "1" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
+      y-intercept: <input type="text" id="yint" value = "0" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
 
-<p>
-<br>
-slope: <input type="text" id="slope" value = "1" onkeydown="if(event.keyCode == 13) {graphEntry();}">
-y-intercept: <input type="text" id="yint" value = "0" onkeydown="if(event.keyCode == 13) {graphEntry();}">
-</p>
+    <br/>
+    x min: <input type="text" id="xmin" value = "-10" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
+    x max: <input type="text" id="xmax" value = "10" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
+    y min: <input type="text" id="ymin" value = "-10" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
+    y max: <input type="text" id="ymax" value = "10" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
+    <br/>
+    x interval: <input type="text" id="xinterval" value = "1" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
+    y interval: <input type="text" id="yinterval" value = "1" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
+  </p>
 
-<button type="button" onclick="
-graphEntry();
-">Click To Graph!</button>
+  <button type="button" onclick="
+				 changeDimensions();
+				 graphEntry();
+				 ">Click To Graph!</button>
 
 </body>
 
