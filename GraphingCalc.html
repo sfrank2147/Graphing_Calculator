@@ -21,134 +21,162 @@
     var yDistance = HEIGHT/(MAXY - MINY);
 
     function changeDimensions() {
-
-    var minx = document.getElementById("xmin").value;
-    var maxx = document.getElementById("xmax").value;
-    var miny = document.getElementById("ymin").value;
-    var maxy = document.getElementById("ymax").value;
-    var xinterval = document.getElementById("xinterval").value;
-    var yinterval = document.getElementById("yinterval").value;
+ 	   var minx = document.getElementById("xmin").value;
+    	var maxx = document.getElementById("xmax").value;
+	    var miny = document.getElementById("ymin").value;
+    	var maxy = document.getElementById("ymax").value;
+    	var xinterval = document.getElementById("xinterval").value;
+    	var yinterval = document.getElementById("yinterval").value;
     
 
-    if(minx>=maxx || miny>= maxy ||!isNumber(minx)||!isNumber(maxx)||!isNumber(miny)||!isNumber(maxy)||!isNumber(xinterval)||xinterval<1||!isNumber(yinterval)||yinterval<1) {
-    alert("Invalid dimensions");
-    return;
-    } else {
-    MINX = minx;
-    MAXX = maxx;
-    MINY = miny;
-    MAXY = maxy;
-    xDistance = WIDTH/(MAXX - MINX);
-    yDistance = HEIGHT/(MAXY - MINY);
-    XINTERVAL = xinterval;
-    YINTERVAL = yinterval;
+    	if(minx>=maxx || miny>= maxy ||!isNumber(minx)||!isNumber(maxx)||!isNumber(miny)||!isNumber(maxy)||!isNumber(xinterval)||xinterval<1||!isNumber(yinterval)||yinterval<1) {
+    		alert("Invalid dimensions");
+    		return;
+    	} else {
+		    MINX = minx;
+		    MAXX = maxx;
+		    MINY = miny;
+		    MAXY = maxy;
+		    xDistance = WIDTH/(MAXX - MINX);
+		    yDistance = HEIGHT/(MAXY - MINY);
+		    XINTERVAL = xinterval;
+		    YINTERVAL = yinterval;
 																					    
-    drawAxes();
-    }
+		    drawAxes();
+	    }
     }
 
     function zeroX() {
-    var ratio = (0-MINX)/(MAXX-MINX);
-    return(ratio*WIDTH);
+    	var ratio = (0-MINX)/(MAXX-MINX);
+   		return(ratio*WIDTH);
     }
 
     function zeroY() {
-    var ratio = (0-MINY)/(MAXY-MINY);
-    return(HEIGHT - (ratio*HEIGHT));
+    	var ratio = (0-MINY)/(MAXY-MINY);
+    	return(HEIGHT - (ratio*HEIGHT));
     }
 
     function isNumber(input) {
-    return(!isNaN(input+0) && input !== null && input !== "" && input !== false);
+    	return(!isNaN(input+0) && input !== null && input !== "" && input !== false);
     }
 
 /*
     function xToValue(canvasX) {
-    return ((canvasX/(MINX + MAXX))-MAXX);
+    	return ((canvasX/(MINX + MAXX))-MAXX);
     }
 
     function yToValue(canvasY) {
-    return (MAXY-(canvasY/(MINY+MAXY)));
+    	return (MAXY-(canvasY/(MINY+MAXY)));
     }
 */
 
     function xToCanvas(xValue) {
-    var distance = MAXX - MINX; 
-    var offSet = xValue*(WIDTH/distance);
-    return(offSet+zeroX());
+    	var distance = MAXX - MINX; 
+    	var offSet = xValue*(WIDTH/distance);
+    	return(offSet+zeroX());
     }
 
     function yToCanvas(yValue) {
-    var offSet = yValue*(HEIGHT/(MAXY - MINY));
-    return(zeroY()-offSet);
+    	var offSet = yValue*(HEIGHT/(MAXY - MINY));
+    	return(zeroY()-offSet);
     }
 
     function drawAxes() {
-    var ctx = document.getElementById("graphSpace").getContext("2d");
-    ctx.clearRect(0,0,WIDTH,HEIGHT);
-    //var zeroX = WIDTH/2;
-    //var zeroY = HEIGHT/2;
-    ctx.lineWidth = 3;
+    	var ctx = document.getElementById("graphSpace").getContext("2d");
+    	ctx.clearRect(0,0,WIDTH,HEIGHT);
+    	ctx.lineWidth = 3;
 
-//y axis
-    ctx.beginPath();
-    ctx.moveTo(zeroX(),0);
-    ctx.lineTo(zeroX(),HEIGHT);
-    ctx.closePath();
-    ctx.stroke();
+		//y axis
+    	ctx.beginPath();
+    	ctx.moveTo(zeroX(),0);
+    	ctx.lineTo(zeroX(),HEIGHT);
+    	ctx.closePath();
+    	ctx.stroke();
     
-//x axis
-    ctx.beginPath();
-    ctx.moveTo(0,zeroY());
-    ctx.lineTo(WIDTH,zeroY());
-    ctx.closePath();
-    ctx.stroke();
+		//x axis
+    	ctx.beginPath();
+    	ctx.moveTo(0,zeroY());
+    	ctx.lineTo(WIDTH,zeroY());
+    	ctx.closePath();
+    	ctx.stroke();
 
-ctx.lineWidth = 1;
-//Scale x axis
-    var xScaleLocation = 0;
-    for(var scale = MINX; scale <= MAXX; scale++) {
-				   if(scale % XINTERVAL == 0) {
-				     ctx.strokeText(scale,xScaleLocation,zeroY() + 10);
-				   }
-				   xScaleLocation += xDistance;
-    }
-//Scale y axis
-var yScaleLocation = HEIGHT;
-for(var scale = MINY; scale <= MAXY; scale++) {
-			       if(scale % YINTERVAL == 0) {
-			         ctx.strokeText(scale,zeroX() + 5,yScaleLocation);
-			       }
-			       yScaleLocation -= yDistance;
-}
-}
+		ctx.lineWidth = 1;
+		//Scale x axis
+    	var xScaleLocation = 0;
+    	for(var scale = MINX; scale <= MAXX; scale++) {
+			if(scale % XINTERVAL == 0) {
+				ctx.strokeText(scale,xScaleLocation,zeroY() + 10);
+			}
+			xScaleLocation += xDistance;
+   		}
+		//Scale y axis
+		var yScaleLocation = HEIGHT;
+		for(var scale = MINY; scale <= MAXY; scale++) {
+			if(scale % YINTERVAL == 0) {
+				ctx.strokeText(scale,zeroX() + 5,yScaleLocation);
+			}
+			yScaleLocation -= yDistance;
+		}
+	}
 
-    function drawLine(slope, yint) {
-    yint = eval(yint);
-    slope = eval(slope);
+	function drawFunction(expression) {
+		var ctx = document.getElementById("graphSpace").getContext("2d");
+		ctx.clearRect(0,0,WIDTH, HEIGHT);
+		drawAxes();
+		
+		var expression = document.getElementById("expression").value.toLowerCase();
+		
+		expression = expression.replace(new RegExp("([0-9])(x)","gi"),
+									function($0,$1,$2) {
+										return ($1 + "*" + $2);
+									}
+		);
+			//+[.[0-9]+]?
+			//((\\.[0-9]+)?)
 
-    var ctx = document.getElementById("graphSpace").getContext("2d");
-    ctx.clearRect(0,0,WIDTH,HEIGHT);
-    drawAxes();
+		expression = expression.replace(new RegExp("(x)\\^([0-9]+)((\\.[0-9]+)?)"),
+									function($0,$1,$2,$3) {
+										return("Math.pow(" + $1 + "," + $2 + $3 + ")");
+									}
+		);
+		alert(expression);
+		
+		for(var xval = eval(MINX); xval < eval(MAXX); xval += 0.01) {
 
+			subExpression = expression.replace(/x/gi,xval)
+			var yval = eval(subExpression);
+			ctx.fillRect(xToCanvas(xval),yToCanvas(yval),1,1);
+		}
+	}
+	function drawLine(slope, yint) {
+  		yint = eval(yint);
+		slope = eval(slope);
 
-    for(var x = eval(MINX); x < eval(MAXX); x += 0.01) {
-	var y = yint + slope * x;
-	ctx.fillRect(xToCanvas(x),yToCanvas(y),1,1);
-	 }
+		var ctx = document.getElementById("graphSpace").getContext("2d");
+		ctx.clearRect(0,0,WIDTH,HEIGHT);
+		drawAxes();
+
+		for(var x = eval(MINX); x < eval(MAXX); x += 0.01) {
+			var y = yint + slope * x;
+			ctx.fillRect(xToCanvas(x),yToCanvas(y),1,1);
+		}
 
 	}
 
     function graphEntry() {
-    var x = document.getElementById('slope').value;
-    var y = document.getElementById('yint').value;
+    	var expression = document.getElementById("expression").value;
+    	drawFunction(expression);
+    	/*
+    	var x = document.getElementById('slope').value;
+    	var y = document.getElementById('yint').value;
 
-    if(isNumber(x) && isNumber(y)) {
-    drawLine(x,y);
-    } 
-    else {
-    drawAxes();
-    }
-
+    	if(isNumber(x) && isNumber(y)) {
+    		drawLine(x,y);
+    	} 
+    	else {
+    		drawAxes();
+    	}
+		*/
     }
 			 
 
@@ -175,9 +203,11 @@ for(var scale = MINY; scale <= MAXY; scale++) {
 
   <p>
     <br/>
-      slope: <input type="text" id="slope" value = "1" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
-      y-intercept: <input type="text" id="yint" value = "0" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
-
+    <!--
+    slope: <input type="text" id="slope" value = "1" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
+	y-intercept: <input type="text" id="yint" value = "0" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
+	-->
+	f(x) = <input type="text" id="expression" onkeydown="if(event.keyCode == 13) {graphEntry();}"/>
     <br/>
     x min: <input type="text" id="xmin" value = "-10" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
     x max: <input type="text" id="xmax" value = "10" onkeydown="if(event.keyCode == 13) {changeDimensions();graphEntry()}"/>
