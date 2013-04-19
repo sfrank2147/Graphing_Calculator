@@ -120,11 +120,14 @@
 	}
 
 	function drawFunction(expression) {
+
 		var ctx = document.getElementById("graphSpace").getContext("2d");
 		ctx.clearRect(0,0,WIDTH, HEIGHT);
 		drawAxes();
 		
 		var expression = document.getElementById("expression").value.toLowerCase();
+
+		expression = expression.replace(new RegExp("-x","gi"),"-1*x");
 		
 		expression = expression.replace(new RegExp("([0-9])(x)","gi"),
 									function($0,$1,$2) {
@@ -134,14 +137,12 @@
 			//+[.[0-9]+]?
 			//((\\.[0-9]+)?)
 
-		expression = expression.replace(new RegExp("(x)\\^([0-9]+)((\\.[0-9]+)?)"),
+		expression = expression.replace(new RegExp("(x)\\^(-?[0-9]+)((\\.[0-9]+)?)","gi"),
 									function($0,$1,$2,$3) {
 										return("Math.pow(" + $1 + "," + $2 + $3 + ")");
 									}
 		);
-		alert(expression);
-		
-		for(var xval = eval(MINX); xval < eval(MAXX); xval += 0.01) {
+		for(var xval = eval(MINX); xval < eval(MAXX); xval += 0.001) {
 
 			subExpression = expression.replace(/x/gi,xval)
 			var yval = eval(subExpression);
